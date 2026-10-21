@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ro" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darius Ultimate Hub - Jocuri & Instrumente Elevi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar and glassmorphism styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.2);
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Pulse ring animation for audio button */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .animate-pulse-ring {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+
+        canvas {
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col md:flex-row overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+
+    <!-- Mobile Top Navigation Header -->
+    <header class="md:hidden bg-slate-900/90 backdrop-blur-md border-b border-slate-800 p-4 sticky top-0 z-40 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/30">
+                D
+            </div>
+            <div>
+                <h1 class="font-extrabold text-base tracking-wide bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Darius Hub</h1>
+                <p class="text-[10px] text-slate-400 font-medium">Ultimate Student & Game Suite</p>
+            </div>
+        </div>
+        <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 focus:outline-none">
+            <i class="fa-solid fa-bars text-xl" id="menuIcon"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl md:shadow-none">
+        <div>
+            <!-- Branding Header -->
+            <div class="p-6 border-b border-slate-800/80 flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-indigo-500/30 transform hover:rotate-6 transition-transform">
+                    D
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-wider bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">Darius Hub</h1>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        <i class="fa-solid fa-bolt text-[8px] mr-1 text-amber-400"></i> Ultimate v2.5
+                    </span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-180px)]" id="navContainer">
+                <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <i class="fa-solid fa-gamepad mr-1.5 text-indigo-400"></i> Jocuri & Distracție
+                </div>
+                
+                <button onclick="switchApp('flappy')" id="nav-flappy" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-kiwi-bird"></i>
+                    </div>
+                    <span>Flappy Bird</span>
+                    <span class="ml-auto text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">JOC</span>
+                </button>
+
+                <div class="px-3 py-2 pt-4 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <i class="fa-solid fa-graduation-cap mr-1.5 text-indigo-400"></i> Utilitare Elevi
+                </div>
+
+                <button onclick="switchApp('grades')" id="nav-grades" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <span>Calculator Medii</span>
+                </button>
+
+                <button onclick="switchApp('planner')" id="nav-planner" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <span>Planificator Teme</span>
+                </button>
+
+                <button onclick="switchApp('pomodoro')" id="nav-pomodoro" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <span>Pomodoro Timer</span>
+                </button>
+
+                <button onclick="switchApp('flashcards')" id="nav-flashcards" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-clone"></i>
+                    </div>
+                    <span>Fișe Învățat</span>
+                </button>
+
+                <button onclick="switchApp('converter')" id="nav-converter" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <span>Conversii & Formule</span>
+                </button>
+
+                <button onclick="switchApp('essays')" id="nav-essays" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-pen-nib"></i>
+                    </div>
+                    <span>Generator Idei Eseuri</span>
+                </button>
+
+                <button onclick="switchApp('exams')" id="nav-exams" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                    <span>Ghid Examene</span>
+                </button>
+
+                <button onclick="switchApp('schedule')" id="nav-schedule" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <span>Orar Școlar</span>
+                </button>
+
+                <button onclick="switchApp('bases')" id="nav-bases" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-binary"></i>
+                    </div>
+                    <span>Baze Numerice</span>
+                </button>
+
+                <button onclick="switchApp('focus')" id="nav-focus" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="w-8 h-8 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-headphones"></i>
+                    </div>
+                    <span>Minte & Focalizare</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-4 border-t border-slate-800 text-center">
+            <p class="text-xs text-slate-500 font-medium">© 2026 Darius Ultimate Hub</p>
+            <p class="text-[10px] text-slate-600">Toate instrumentele într-un singur loc</p>
+        </div>
+    </aside>
+
+    <!-- Overlay for Mobile Sidebar -->
+    <div id="sidebarOverlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+    <!-- Main Content Display Area -->
+    <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto">
+        
+        <!-- App Title Header Banner -->
+        <div class="glass-card rounded-2xl p-6 mb-8 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+            <div class="flex items-center gap-4">
+                <div id="appHeaderIcon" class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shadow-inner">
+                    <i class="fa-solid fa-kiwi-bird"></i>
+                </div>
+                <div>
+                    <h2 id="appHeaderTitle" class="text-2xl font-black tracking-tight text-white">Jocul Flappy Bird</h2>
+                    <p id="appHeaderSubtitle" class="text-xs md:text-sm text-slate-400">Zboară printre obstacole, acumulează puncte și doboară recordul personal!</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 self-end md:self-center">
+                <span id="headerBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1.5">
+                    <i class="fa-solid fa-gamepad text-xs"></i> Mod Interactiv
+                </span>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             1. FLAPPY BIRD GAME APP
+        ================================================== -->
+        <section id="app-flappy" class="app-page space-y-6">
+            <div class="glass-card rounded-3xl p-6 border border-slate-800 shadow-2xl flex flex-col items-center">
+                
+                <!-- Game Canvas Box -->
+                <div class="relative w-full max-w-[420px] aspect-[2/3] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border-2 border-indigo-500/30">
+                    <canvas id="flappyCanvas" class="w-full h-full block"></canvas>
+                    
+                    <!-- Overlay Score Banner -->
+                    <div class="absolute top-4 left-0 right-0 flex justify-between px-6 pointer-events-none">
+                        <div class="bg-slate-950/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-slate-700 text-xs font-bold text-slate-300">
+                            Record: <span id="fbHighScore" class="text-amber-400 font-extrabold text-sm ml-1">0</span>
+                        </div>
+                        <div class="bg-indigo-600/90 text-white font-black px-4 py-1.5 rounded-full shadow-lg border border-indigo-400 text-sm">
+                            Scor: <span id="fbCurrentScore" class="text-white text-base">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Touch/Click Jump Trigger Overlay for Easy Play -->
+                    <div id="gameTouchZone" onclick="triggerFlappyJump()" class="absolute inset-0 cursor-pointer z-10"></div>
+                </div>
+
+                <!-- Controls & Instructions -->
+                <div class="mt-6 text-center max-w-md w-full">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <button onclick="resetFlappyGame()" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Joc Nou / Restart
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-400">
+                        <i class="fa-solid fa-keyboard mr-1 text-indigo-400"></i> Apasă pe ecran sau pe tasta <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Space</kbd> pentru a sări!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             2. GRADE CALCULATOR APP
+        ================================================== -->
+        <section id="app-grades" class="app-page hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form Add Grade -->
+                <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-emerald-400"></i> Adaugă Materie & Note
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Nume Materie</label>
+                        <input type="text" id="subjectName" placeholder="ex: Matematică, Limba Română..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder-slate-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Note Curente (separate prin virgulă)</label>
+                        <input type="text" id="subjectGrades" placeholder="ex: 8, 9, 10, 7" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder-slate-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Nota la Teză (Opțional)</label>
+                        <input type="number" min="1" max="10" id="subjectThesis" placeholder="ex: 9 (lasă gol dacă nu există)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder-slate-500">
+                    </div>
+
+                    <button onclick="addSubjectGrade()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> Calculează & Salvează
+                    </button>
+                </div>
+
+                <!-- Display List of Grades & Overall Average -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="glass-card rounded-2xl p-6 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Media Generală Estimată</span>
+                            <div class="text-4xl font-black text-emerald-400 tracking-tight" id="overallAverageDisplay">0.00</div>
+                        </div>
+                        <div class="text-right">
+                            <span id="statusGradeBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                În stare excelentă
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 border border-slate-800">
+                        <h4 class="text-sm font-bold text-slate-300 mb-4 flex items-center justify-between">
+                            <span>Materii Înregistrate</span>
+                            <button onclick="clearAllGrades()" class="text-xs text-rose-400 hover:underline">Șterge Tot</button>
+                        </h4>
+                        <div id="gradesListContainer" class="space-y-3">
+                            <p class="text-xs text-slate-500 text-center py-6">Nu ai adăugat încă nicio materie.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             3. HOMEWORK PLANNER APP
+        ================================================== -->
+        <section id="app-planner" class="app-page hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border border-slate-800">
+                <div class="flex flex-col md:flex-row items-center gap-3 mb-6">
+                    <input type="text" id="taskTitleInput" placeholder="Titlu temă / sarcină de făcut..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white">
+                    <select id="taskPriorityInput" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-indigo-500">
+                        <option value="Urgente">Urgență Mare</option>
+                        <option value="Normal" selected>Prioritate Normală</option>
+                        <option value="Scazuta">Prioritate Scăzută</option>
+                    </select>
+                    <input type="date" id="taskDeadlineInput" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:border-indigo-500">
+                    <button onclick="addNewTask()" class="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Adaugă
+                    </button>
+                </div>
+
+                <!-- Tasks Filter Tabs -->
+                <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-4">
+                    <button onclick="filterTasks('all')" id="task-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Toate</button>
+                    <button onclick="filterTasks('pending')" id="task-filter-pending" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:bg-slate-800">În Curs</button>
+                    <button onclick="filterTasks('completed')" id="task-filter-completed" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:bg-slate-800">Finalizate</button>
+                </div>
+
+                <!-- Task Item Cards -->
+                <div id="taskListContainer" class="space-y-3">
+                    <p class="text-xs text-slate-500 text-center py-6">Momentan nu ai nici o temă adăugată.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             4. POMODORO TIMER APP
+        ================================================== -->
+        <section id="app-pomodoro" class="app-page hidden space-y-6">
+            <div class="glass-card rounded-3xl p-8 border border-slate-800 max-w-lg mx-auto text-center space-y-6">
+                <!-- Session Selector -->
+                <div class="inline-flex p-1 bg-slate-900 rounded-xl border border-slate-800">
+                    <button onclick="setPomodoroMode('work')" id="pomo-mode-work" class="px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white transition-all">Studiu (25m)</button>
+                    <button onclick="setPomodoroMode('shortBreak')" id="pomo-mode-short" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">Pauză Scurtă (5m)</button>
+                    <button onclick="setPomodoroMode('longBreak')" id="pomo-mode-long" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">Pauză Lungă (15m)</button>
+                </div>
+
+                <!-- Display Timer -->
+                <div class="relative w-64 h-64 mx-auto flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="128" cy="128" r="110" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="transparent" />
+                        <circle id="pomodoroProgressCircle" cx="128" cy="128" r="110" stroke="currentColor" stroke-width="8" class="text-rose-500 transition-all duration-1000" fill="transparent" stroke-dasharray="691" stroke-dashoffset="0" stroke-linecap="round" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="pomodoroTimeDisplay" class="text-5xl font-black font-mono tracking-wider text-white">25:00</span>
+                        <span id="pomodoroLabel" class="text-xs text-slate-400 mt-2 font-medium uppercase tracking-widest">Sesiune Studiu</span>
+                    </div>
+                </div>
+
+                <!-- Timer Controls -->
+                <div class="flex items-center justify-center gap-4">
+                    <button onclick="togglePomodoroTimer()" id="pomoStartBtn" class="px-8 py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-base rounded-2xl shadow-lg shadow-rose-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> START
+                    </button>
+                    <button onclick="resetPomodoroTimer()" class="p-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl transition-all">
+                        <i class="fa-solid fa-rotate-right text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             5. FLASHCARDS APP
+        ================================================== -->
+        <section id="app-flashcards" class="app-page hidden space-y-6">
+            <div class="max-w-xl mx-auto space-y-6">
+                <!-- Flip Flashcard -->
+                <div onclick="flipFlashcard()" class="perspective-1000 cursor-pointer">
+                    <div id="flashcardInner" class="relative w-full h-72 rounded-3xl glass-card border border-slate-700/80 shadow-2xl transition-transform duration-500 transform-style-3d p-8 flex flex-col justify-between items-center text-center">
+                        <!-- Front Side -->
+                        <div class="absolute inset-0 p-8 backface-hidden flex flex-col justify-between items-center">
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-400">Întrebare / Termen</span>
+                            <div id="cardQuestionDisplay" class="text-xl md:text-2xl font-bold text-white my-auto">Ce reprezintă Fotosinteza?</div>
+                            <span class="text-[11px] text-slate-500"><i class="fa-solid fa-rotate mr-1"></i> Apasă pentru a roti cardul</span>
+                        </div>
+                        <!-- Back Side -->
+                        <div class="absolute inset-0 p-8 backface-hidden rotate-y-180 flex flex-col justify-between items-center bg-indigo-950/80 rounded-3xl border border-indigo-500/40">
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-400">Răspuns / Explicație</span>
+                            <div id="cardAnswerDisplay" class="text-base md:text-lg font-medium text-slate-200 my-auto">Procesul prin care plantele verzui transformă energia luminoasă în hrană și oxigen.</div>
+                            <span class="text-[11px] text-indigo-300"><i class="fa-solid fa-check mr-1"></i> Ai înțeles conceptul?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center justify-between gap-4">
+                    <button onclick="prevFlashcard()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-sm font-bold text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-left"></i> Anterioara
+                    </button>
+                    <span id="flashcardCounter" class="text-xs font-bold text-slate-400">Card 1 / 5</span>
+                    <button onclick="nextFlashcard()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-sm font-bold text-white flex items-center gap-2">
+                        Următoarea <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             6. CONVERTER & FORMULAS APP
+        ================================================== -->
+        <section id="app-converter" class="app-page hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Unit Converter -->
+                <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-right-arrow-left text-cyan-400"></i> Convertor Lungime & Masă
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Valoare</label>
+                        <input type="number" id="convertVal" value="1" oninput="runUnitConversion()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500 text-white">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Din</label>
+                            <select id="convertFrom" onchange="runUnitConversion()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300">
+                                <option value="m">Metri (m)</option>
+                                <option value="km">Kilometri (km)</option>
+                                <option value="cm">Centimetri (cm)</option>
+                                <option value="kg">Kilograme (kg)</option>
+                                <option value="g">Grame (g)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">În</label>
+                            <select id="convertTo" onchange="runUnitConversion()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300">
+                                <option value="cm">Centimetri (cm)</option>
+                                <option value="m">Metri (m)</option>
+                                <option value="km">Kilometri (km)</option>
+                                <option value="g">Grame (g)</option>
+                                <option value="kg">Kilograme (kg)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800 text-center">
+                        <span class="text-xs text-slate-400">Rezultat:</span>
+                        <div id="convertResultDisplay" class="text-2xl font-black text-cyan-400 mt-1">100 cm</div>
+                    </div>
+                </div>
+
+                <!-- Quick Math/Physics Formulas -->
+                <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-square-root-variable text-amber-400"></i> Formule Esențiale
+                    </h3>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-slate-200">Viteză (Fizică)</div>
+                                <div class="text-slate-400">v = d / t (Distanța / Timp)</div>
+                            </div>
+                            <span class="text-indigo-400 font-mono font-bold">m/s</span>
+                        </div>
+
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-slate-200">Aria Cerc (Matematică)</div>
+                                <div class="text-slate-400">A = π × r²</div>
+                            </div>
+                            <span class="text-indigo-400 font-mono font-bold">r = rază</span>
+                        </div>
+
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-slate-200">Teorema lui Pitagora</div>
+                                <div class="text-slate-400">a² + b² = c²</div>
+                            </div>
+                            <span class="text-indigo-400 font-mono font-bold">c = ipotenuză</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             7. ESSAY IDEAS GENERATOR APP
+        ================================================== -->
+        <section id="app-essays" class="app-page hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-4 max-w-2xl mx-auto">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-fuchsia-400"></i> Generator Idei & Structură Eseuri
+                </h3>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Alege Tema Eseului</label>
+                    <select id="essayTopicSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-fuchsia-500">
+                        <option value="tehnologie">Impactul Inteligenței Artificiale în Educație</option>
+                        <option value="natura">Protejarea Mediului Înconjurător și Reciclarea</option>
+                        <option value="lectura">Importanța Lecturii în Dezvoltarea Personală</option>
+                    </select>
+                </div>
+
+                <button onclick="generateEssayStructure()" class="w-full py-3 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generează Plan Eseu
+                </button>
+
+                <div id="essayOutputContainer" class="p-5 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-3 leading-relaxed">
+                    <p class="text-slate-500 text-center">Apasă pe butonul de mai sus pentru a genera o structură orientativă.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             8. EXAM HELPER APP
+        ================================================== -->
+        <section id="app-exams" class="app-page hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-2">
+                    <div class="text-amber-400 text-xl font-bold mb-1"><i class="fa-solid fa-clock mr-2"></i> Înainte de Examene</div>
+                    <ul class="text-xs text-slate-300 space-y-2 list-disc pl-4">
+                        <li>Dormi cel puțin 8 ore în noaptea dinaintea examenului.</li>
+                        <li>Pregătește-ți ustensilele de scris de cu seară.</li>
+                        <li>Mănâncă un mic dejun echilibrat și hidratează-te.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-2">
+                    <div class="text-indigo-400 text-xl font-bold mb-1"><i class="fa-solid fa-pen-ruler mr-2"></i> În Timpul Testului</div>
+                    <ul class="text-xs text-slate-300 space-y-2 list-disc pl-4">
+                        <li>Citește toate subiectele cu atenție înainte de a începe.</li>
+                        <li>Rezolvă mai întâi exercițiile la care știi sigur răspunsul.</li>
+                        <li>Păstrează 10 minute la final pentru recitire și corectare.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 border border-slate-800 space-y-2">
+                    <div class="text-emerald-400 text-xl font-bold mb-1"><i class="fa-solid fa-brain mr-2"></i> Controlul Stresului</div>
+                    <ul class="text-xs text-slate-300 space-y-2 list-disc pl-4">
+                        <li>Inhalează adânc 4 secunde, ține aerul 4 secunde, expiră 4 secunde.</li>
+                        <li>Concentrează-te doar pe lucrarea ta, nu pe colegi.</li>
+                        <li>Dacă te blochezi, treci mai departe și revii ulterior.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             9. INTERACTIVE CLASS SCHEDULE APP
+        ================================================== -->
+        <section id="app-schedule" class="app-page hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border border-slate-800">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-week text-indigo-400"></i> Orarul Săptămânal
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-4" id="scheduleDaysContainer">
+                    <!-- Schedule Day Columns populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             10. NUMBER BASE CONVERTER APP
+        ================================================== -->
+        <section id="app-bases" class="app-page hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border border-slate-800 max-w-xl mx-auto space-y-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-binary text-teal-400"></i> Convertor Baze Numerice (10 / 2 / 8 / 16)
+                </h3>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Introduceți un Număr Decimal (Baza 10)</label>
+                    <input type="number" id="base10Input" value="42" oninput="convertNumberBases()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-500 text-white font-mono text-base">
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">Binar (Baza 2):</span>
+                        <span id="base2Result" class="text-sm font-mono font-bold text-teal-300">101010</span>
+                    </div>
+
+                    <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">Octal (Baza 8):</span>
+                        <span id="base8Result" class="text-sm font-mono font-bold text-teal-300">52</span>
+                    </div>
+
+                    <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400">Hexadecimal (Baza 16):</span>
+                        <span id="base16Result" class="text-sm font-mono font-bold text-teal-300">2A</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             11. FOCUS & AMBIENT AUDIO APP
+        ================================================== -->
+        <section id="app-focus" class="app-page hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border border-slate-800 max-w-xl mx-auto space-y-6 text-center">
+                <h3 class="text-lg font-bold text-white flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-headphones text-violet-400"></i> Generator Sunete de Focalizare
+                </h3>
+                <p class="text-xs text-slate-400">Ascultă sunete sintetizate pentru concentrare maximă în timpul învățării.</p>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="toggleAmbientSound('rain')" id="sound-btn-rain" class="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-violet-500/50 transition-all text-center group">
+                        <i class="fa-solid fa-cloud-rain text-3xl text-slate-400 group-hover:text-violet-400 mb-2"></i>
+                        <div class="text-xs font-bold text-slate-200">Ploaie Calmă</div>
+                    </button>
+
+                    <button onclick="toggleAmbientSound('waves')" id="sound-btn-waves" class="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-violet-500/50 transition-all text-center group">
+                        <i class="fa-solid fa-water text-3xl text-slate-400 group-hover:text-violet-400 mb-2"></i>
+                        <div class="text-xs font-bold text-slate-200">Valuri Ocean</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Application Engine -->
+    <script>
+        /* ======================================================
+           NAVIGATION & ROUTING SYSTEM
+        ====================================================== */
+        const appsConfig = {
+            flappy: { title: "Jocul Flappy Bird", subtitle: "Zboară printre obstacole și doboară recordul!", icon: "fa-kiwi-bird", color: "amber" },
+            grades: { title: "Calculator de Medii & Note", subtitle: "Calculează-ți media la fiecare materie și media generală", icon: "fa-calculator", color: "emerald" },
+            planner: { title: "Planificator Teme & Task-uri", subtitle: "Organizează-ți proiectele și temele de casă", icon: "fa-list-check", color: "blue" },
+            pomodoro: { title: "Cronometru Pomodoro", subtitle: "Tehnică de învățare focalizată cu pauze regulate", icon: "fa-stopwatch", color: "rose" },
+            flashcards: { title: "Fișe de Învățat (Flashcards)", subtitle: "Recapitulează noțiunile importante rapid", icon: "fa-clone", color: "purple" },
+            converter: { title: "Conversii Unități & Formule", subtitle: "Transformă rapid unitățile și consultă formule utile", icon: "fa-arrow-right-arrow-left", color: "cyan" },
+            essays: { title: "Generator Idei Eseuri", subtitle: "Structuri și idei ghidate pentru compuneri", icon: "fa-pen-nib", color: "fuchsia" },
+            exams: { title: "Ghid de Răspuns la Examene", subtitle: "Sfaturi practice pentru abordarea testelor", icon: "fa-book-bookmark", color: "yellow" },
+            schedule: { title: "Orar Școlar Interactiv", subtitle: "Lista lecțiilor pe fiecare zi din săptămână", icon: "fa-calendar-days", color: "indigo" },
+            bases: { title: "Calculator Baze Numerice", subtitle: "Convertește numere între baze (2, 8, 10, 16)", icon: "fa-binary", color: "teal" },
+            focus: { title: "Minte & Focalizare", subtitle: "Generare de fundal sonor de concentrare", icon: "fa-headphones", color: "violet" }
+        };
+
+        function switchApp(appKey) {
+            // Hide all pages
+            document.querySelectorAll('.app-page').forEach(page => page.classList.add('hidden'));
+            
+            // Show selected page
+            const targetPage = document.getElementById(`app-${appKey}`);
+            if (targetPage) targetPage.classList.remove('hidden');
+
+            // Update Nav Item Active states
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('bg-indigo-600/30', 'text-white', 'border-l-4', 'border-indigo-500');
+            });
+            const activeNav = document.getElementById(`nav-${appKey}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-indigo-600/30', 'text-white', 'border-l-4', 'border-indigo-500');
+            }
+
+            // Update Banner Title & Icons
+            const config = appsConfig[appKey] || appsConfig.flappy;
+            document.getElementById('appHeaderTitle').innerText = config.title;
+            document.getElementById('appHeaderSubtitle').innerText = config.subtitle;
+            document.getElementById('appHeaderIcon').innerHTML = `<i class="fa-solid ${config.icon}"></i>`;
+
+            // Close mobile menu if open
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+            }
+
+            // If Flappy Bird selected, focus/start canvas engine
+            if (appKey === 'flappy' && !fbGameRunning) {
+                initFlappyCanvas();
+            }
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        /* ======================================================
+           1. FLAPPY BIRD GAME ENGINE (Canvas API)
+        ====================================================== */
+        let canvas, ctx;
+        let fbGameRunning = false;
+        let bird = { x: 50, y: 150, radius: 12, velocity: 0, gravity: 0.35, jump: -6.5 };
+        let pipes = [];
+        let score = 0;
+        let highScore = localStorage.getItem('darius_fb_highscore') || 0;
+        let frameCount = 0;
+        let animationFrameId;
+
+        function initFlappyCanvas() {
+            canvas = document.getElementById('flappyCanvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+            
+            // Set internal resolution
+            canvas.width = 360;
+            canvas.height = 540;
+
+            document.getElementById('fbHighScore').innerText = highScore;
+            resetFlappyGame();
+        }
+
+        function resetFlappyGame() {
+            bird.y = canvas.height / 2;
+            bird.velocity = 0;
+            pipes = [];
+            score = 0;
+            frameCount = 0;
+            fbGameRunning = true;
+            document.getElementById('fbCurrentScore').innerText = score;
+            
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            gameLoop();
+        }
+
+        function triggerFlappyJump() {
+            if (!fbGameRunning) {
+                resetFlappyGame();
+                return;
+            }
+            bird.velocity = bird.jump;
+        }
+
+        // Global Keydown for Space Bar Jump
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                const flappyPage = document.getElementById('app-flappy');
+                if (!flappyPage.classList.contains('hidden')) {
+                    e.preventDefault();
+                    triggerFlappyJump();
+                }
+            }
+        });
+
+        function gameLoop() {
+            if (!fbGameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Sky Background
+            let bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGradient.addColorStop(0, '#0f172a');
+            bgGradient.addColorStop(1, '#1e1b4b');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Physics Update
+            bird.velocity += bird.gravity;
+            bird.y += bird.velocity;
+
+            // Draw Bird
+            ctx.beginPath();
+            ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#f59e0b'; // Amber yellow
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            // Bird Eye & Wing
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(bird.x + 5, bird.y - 4, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(bird.x + 6, bird.y - 4, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pipe Spawning
+            frameCount++;
+            if (frameCount % 90 === 0) {
+                let gap = 120;
+                let minPipeHeight = 40;
+                let topHeight = Math.floor(Math.random() * (canvas.height - gap - minPipeHeight * 2)) + minPipeHeight;
+                pipes.push({
+                    x: canvas.width,
+                    top: topHeight,
+                    bottom: canvas.height - topHeight - gap,
+                    passed: false
+                });
+            }
+
+            // Move & Draw Pipes
+            for (let i = 0; i < pipes.length; i++) {
+                let p = pipes[i];
+                p.x -= 2.2;
+
+                // Top Pipe
+                ctx.fillStyle = '#10b981'; // Emerald
+                ctx.fillRect(p.x, 0, 48, p.top);
+                ctx.strokeStyle = '#047857';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(p.x, 0, 48, p.top);
+
+                // Bottom Pipe
+                let bottomY = canvas.height - p.bottom;
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(p.x, bottomY, 48, p.bottom);
+                ctx.strokeRect(p.x, bottomY, 48, p.bottom);
+
+                // Score Calculation
+                if (!p.passed && bird.x > p.x + 48) {
+                    p.passed = true;
+                    score++;
+                    document.getElementById('fbCurrentScore').innerText = score;
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem('darius_fb_highscore', highScore);
+                        document.getElementById('fbHighScore').innerText = highScore;
+                    }
+                }
+
+                // Collision Detection
+                if (
+                    bird.x + bird.radius > p.x && 
+                    bird.x - bird.radius < p.x + 48 && 
+                    (bird.y - bird.radius < p.top || bird.y + bird.radius > bottomY)
+                ) {
+                    gameOverFlappy();
+                    return;
+                }
+            }
+
+            // Remove offscreen pipes
+            pipes = pipes.filter(p => p.x > -60);
+
+            // Floor / Ceiling Collisions
+            if (bird.y + bird.radius >= canvas.height || bird.y - bird.radius <= 0) {
+                gameOverFlappy();
+                return;
+            }
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function gameOverFlappy() {
+            fbGameRunning = false;
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('JOC SFÂRȘIT!', canvas.width / 2, canvas.height / 2 - 20);
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '14px sans-serif';
+            ctx.fillText(`Scor Final: ${score}`, canvas.width / 2, canvas.height / 2 + 10);
+            ctx.fillText('Apasă pentru a juca din nou', canvas.width / 2, canvas.height / 2 + 35);
+        }
+
+
+        /* ======================================================
+           2. GRADE CALCULATOR ENGINE
+        ====================================================== */
+        let subjectsList = JSON.parse(localStorage.getItem('darius_grades')) || [];
+
+        function addSubjectGrade() {
+            const name = document.getElementById('subjectName').value.trim();
+            const gradesStr = document.getElementById('subjectGrades').value.trim();
+            const thesis = document.getElementById('subjectThesis').value.trim();
+
+            if (!name || !gradesStr) {
+                alert('Vă rugăm să introduceți numele materiei și cel puțin o notă!');
+                return;
+            }
+
+            const grades = gradesStr.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n) && n >= 1 && n <= 10);
+            if (grades.length === 0) {
+                alert('Introduceți note valide între 1 și 10!');
+                return;
+            }
+
+            let avg = grades.reduce((a, b) => a + b, 0) / grades.length;
+            if (thesis) {
+                let thesisVal = parseFloat(thesis);
+                if (!isNaN(thesisVal)) {
+                    avg = (avg * 3 + thesisVal) / 4;
+                }
+            }
+
+            subjectsList.push({ name, grades, thesis: thesis ? parseFloat(thesis) : null, avg: avg.toFixed(2) });
+            localStorage.setItem('darius_grades', JSON.stringify(subjectsList));
+            
+            // Clear Inputs
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectGrades').value = '';
+            document.getElementById('subjectThesis').value = '';
+
+            renderGrades();
+        }
+
+        function renderGrades() {
+            const container = document.getElementById('gradesListContainer');
+            if (subjectsList.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Nu ai adăugat încă nicio materie.</p>`;
+                document.getElementById('overallAverageDisplay').innerText = '0.00';
+                return;
+            }
+
+            let html = '';
+            let totalAvg = 0;
+
+            subjectsList.forEach((sub, idx) => {
+                totalAvg += parseFloat(sub.avg);
+                html += `
+                    <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-slate-200 text-sm">${sub.name}</div>
+                            <div class="text-xs text-slate-400">Note: ${sub.grades.join(', ')} ${sub.thesis ? `| Teză: ${sub.thesis}` : ''}</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-base font-black text-emerald-400">${sub.avg}</span>
+                            <button onclick="deleteGrade(${idx})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            let overall = (totalAvg / subjectsList.length).toFixed(2);
+            document.getElementById('overallAverageDisplay').innerText = overall;
+        }
+
+        function deleteGrade(idx) {
+            subjectsList.splice(idx, 1);
+            localStorage.setItem('darius_grades', JSON.stringify(subjectsList));
+            renderGrades();
+        }
+
+        function clearAllGrades() {
+            if (confirm('Sigur doriți să ștergeți toate materiile?')) {
+                subjectsList = [];
+                localStorage.removeItem('darius_grades');
+                renderGrades();
+            }
+        }
+
+
+        /* ======================================================
+           3. HOMEWORK PLANNER ENGINE
+        ====================================================== */
+        let tasksList = JSON.parse(localStorage.getItem('darius_tasks')) || [];
+        let currentTaskFilter = 'all';
+
+        function addNewTask() {
+            const title = document.getElementById('taskTitleInput').value.trim();
+            const priority = document.getElementById('taskPriorityInput').value;
+            const deadline = document.getElementById('taskDeadlineInput').value;
+
+            if (!title) {
+                alert('Introduceți un titlu pentru temă!');
+                return;
+            }
+
+            tasksList.push({ id: Date.now(), title, priority, deadline, completed: false });
+            localStorage.setItem('darius_tasks', JSON.stringify(tasksList));
+            document.getElementById('taskTitleInput').value = '';
+            renderTasks();
+        }
+
+        function toggleTaskStatus(id) {
+            const t = tasksList.find(item => item.id === id);
+            if (t) {
+                t.completed = !t.completed;
+                localStorage.setItem('darius_tasks', JSON.stringify(tasksList));
+                renderTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            tasksList = tasksList.filter(item => item.id !== id);
+            localStorage.setItem('darius_tasks', JSON.stringify(tasksList));
+            renderTasks();
+        }
+
+        function filterTasks(type) {
+            currentTaskFilter = type;
+            ['all', 'pending', 'completed'].forEach(f => {
+                const btn = document.getElementById(`task-filter-${f}`);
+                if (f === type) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:bg-slate-800";
+                }
+            });
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('taskListContainer');
+            let filtered = tasksList;
+            if (currentTaskFilter === 'pending') filtered = tasksList.filter(t => !t.completed);
+            if (currentTaskFilter === 'completed') filtered = tasksList.filter(t => t.completed);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Nu există sarcini în această categorie.</p>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(task => {
+                let pBg = task.priority === 'Urgente' ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' : 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+                html += `
+                    <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTaskStatus(${task.id})" class="w-4 h-4 rounded accent-indigo-600 cursor-pointer">
+                            <span class="${task.completed ? 'line-through text-slate-500' : 'text-slate-200'} text-sm font-medium">${task.title}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${pBg}">${task.priority}</span>
+                            ${task.deadline ? `<span class="text-[10px] text-slate-400"><i class="fa-solid fa-clock mr-1"></i>${task.deadline}</span>` : ''}
+                            <button onclick="deleteTask(${task.id})" class="text-slate-500 hover:text-rose-400 text-xs ml-2"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+
+        /* ======================================================
+           4. POMODORO TIMER ENGINE
+        ====================================================== */
+        let pomoTime = 25 * 60;
+        let pomoMaxTime = 25 * 60;
+        let pomoInterval = null;
+        let pomoIsRunning = false;
+
+        function setPomodoroMode(mode) {
+            clearInterval(pomoInterval);
+            pomoIsRunning = false;
+            document.getElementById('pomoStartBtn').innerHTML = `<i class="fa-solid fa-play"></i> START`;
+
+            if (mode === 'work') { pomoTime = 25 * 60; document.getElementById('pomodoroLabel').innerText = "Sesiune Studiu"; }
+            if (mode === 'shortBreak') { pomoTime = 5 * 60; document.getElementById('pomodoroLabel').innerText = "Pauză Scurtă"; }
+            if (mode === 'longBreak') { pomoTime = 15 * 60; document.getElementById('pomodoroLabel').innerText = "Pauză Lungă"; }
+            
+            pomoMaxTime = pomoTime;
+            updatePomodoroDisplay();
+        }
+
+        function togglePomodoroTimer() {
+            if (pomoIsRunning) {
+                clearInterval(pomoInterval);
+                pomoIsRunning = false;
+                document.getElementById('pomoStartBtn').innerHTML = `<i class="fa-solid fa-play"></i> START`;
+            } else {
+                pomoIsRunning = true;
+                document.getElementById('pomoStartBtn').innerHTML = `<i class="fa-solid fa-pause"></i> PAUZĂ`;
+                pomoInterval = setInterval(() => {
+                    pomoTime--;
+                    updatePomodoroDisplay();
+                    if (pomoTime <= 0) {
+                        clearInterval(pomoInterval);
+                        alert('Timpul a expirat! Fă o pauză sau începe o nouă sesiune.');
+                        setPomodoroMode('work');
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetPomodoroTimer() {
+            setPomodoroMode('work');
+        }
+
+        function updatePomodoroDisplay() {
+            let m = Math.floor(pomoTime / 60);
+            let s = pomoTime % 60;
+            document.getElementById('pomodoroTimeDisplay').innerText = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+
+            // Update Progress Circle Stroke
+            const circle = document.getElementById('pomodoroProgressCircle');
+            const circumference = 691;
+            const offset = circumference - (pomoTime / pomoMaxTime) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+
+        /* ======================================================
+           5. FLASHCARDS ENGINE
+        ====================================================== */
+        const cardsData = [
+            { q: "Ce reprezintă Fotosinteza?", a: "Procesul prin care plantele verzui transformă energia luminoasă în hrană și oxigen." },
+            { q: "Care este formula ariei unui cerc?", a: "Aria = π × r² (unde r este raza cercului)." },
+            { q: "Câte strofe are poezia Luceafărul?", a: "Luceafărul de Mihai Eminescu are un număr de 98 de strofe." },
+            { q: "Ce este Teorema lui Pitagora?", a: "Într-un triunghi dreptunghic, suma pătratelor catetelor este egală cu pătratul ipotenuzei (a² + b² = c²)." }
+        ];
+        let currentCardIdx = 0;
+        let cardFlipped = false;
+
+        function flipFlashcard() {
+            cardFlipped = !cardFlipped;
+            const inner = document.getElementById('flashcardInner');
+            if (cardFlipped) inner.classList.add('rotate-y-180');
+            else inner.classList.remove('rotate-y-180');
+        }
+
+        function nextFlashcard() {
+            cardFlipped = false;
+            document.getElementById('flashcardInner').classList.remove('rotate-y-180');
+            currentCardIdx = (currentCardIdx + 1) % cardsData.length;
+            updateFlashcardView();
+        }
+
+        function prevFlashcard() {
+            cardFlipped = false;
+            document.getElementById('flashcardInner').classList.remove('rotate-y-180');
+            currentCardIdx = (currentCardIdx - 1 + cardsData.length) % cardsData.length;
+            updateFlashcardView();
+        }
+
+        function updateFlashcardView() {
+            document.getElementById('cardQuestionDisplay').innerText = cardsData[currentCardIdx].q;
+            document.getElementById('cardAnswerDisplay').innerText = cardsData[currentCardIdx].a;
+            document.getElementById('flashcardCounter').innerText = `Card ${currentCardIdx + 1} / ${cardsData.length}`;
+        }
+
+
+        /* ======================================================
+           6. CONVERTER ENGINE
+        ====================================================== */
+        function runUnitConversion() {
+            let val = parseFloat(document.getElementById('convertVal').value) || 0;
+            let from = document.getElementById('convertFrom').value;
+            let to = document.getElementById('convertTo').value;
+            let res = val;
+
+            if (from === 'm' && to === 'cm') res = val * 100;
+            if (from === 'cm' && to === 'm') res = val / 100;
+            if (from === 'km' && to === 'm') res = val * 1000;
+            if (from === 'm' && to === 'km') res = val / 1000;
+            if (from === 'kg' && to === 'g') res = val * 1000;
+            if (from === 'g' && to === 'kg') res = val / 1000;
+
+            document.getElementById('convertResultDisplay').innerText = `${res} ${to}`;
+        }
+
+
+        /* ======================================================
+           7. ESSAY IDEAS GENERATOR
+        ====================================================== */
+        function generateEssayStructure() {
+            const topic = document.getElementById('essayTopicSelect').value;
+            const out = document.getElementById('essayOutputContainer');
+
+            if (topic === 'tehnologie') {
+                out.innerHTML = `
+                    <div class="font-bold text-fuchsia-400 text-sm">Structură Recomandată: IA în Educație</div>
+                    <p><strong>1. Introducere:</strong> Definitivarea conceptului de Inteligență Artificială și rolul său tot mai mare în școli.</p>
+                    <p><strong>2. Argument Pro:</strong> Personalizarea procesului de învățare pentru fiecare elev.</p>
+                    <p><strong>3. Contraargument/Risc:</strong> Scăderea gândirii critice prin dependența excesivă de soluții automate.</p>
+                    <p><strong>4. Concluzie:</strong> Folosirea ghidată și responsabilă a tehnologiei ca un partener educațional.</p>
+                `;
+            } else {
+                out.innerHTML = `
+                    <div class="font-bold text-fuchsia-400 text-sm">Structură Recomandată</div>
+                    <p><strong>1. Introducere:</strong> Prezentarea ideii principale și formularea ipotezei de lucru.</p>
+                    <p><strong>2. Cuprins:</strong> Două argumente solide însoțite de exemple concrete din viața reală.</p>
+                    <p><strong>3. Concluzie:</strong> Sintetizarea ideilor și formularea unei concluzii personale.</p>
+                `;
+            }
+        }
+
+
+        /* ======================================================
+           8. CLASS SCHEDULE GENERATOR
+        ====================================================== */
+        const scheduleData = {
+            "Luni": ["Matematică", "Limba Română", "Fizică", "Engleză"],
+            "Marți": ["Chimie", "Istorie", "Informatică", "Biologie"],
+            "Miercuri": ["Geografie", "Matematică", "Desen", "Sport"],
+            "Joi": ["Limba Română", "Fizică", "Muzică", "Dirigenție"],
+            "Vineri": ["Informatică", "Engleză", "Istorie", "Educație Socială"]
+        };
+
+        function initSchedule() {
+            const container = document.getElementById('scheduleDaysContainer');
+            let html = '';
+            for (let day in scheduleData) {
+                html += `
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+                        <div class="font-bold text-indigo-400 border-b border-slate-800 pb-2 mb-3 text-center text-sm">${day}</div>
+                        <ul class="space-y-2">
+                            ${scheduleData[day].map(s => `<li class="text-xs bg-slate-800/60 px-2.5 py-1.5 rounded text-slate-300 font-medium">${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+
+        /* ======================================================
+           9. NUMBER BASE CONVERTER ENGINE
+        ====================================================== */
+        function convertNumberBases() {
+            let num = parseInt(document.getElementById('base10Input').value) || 0;
+            document.getElementById('base2Result').innerText = num.toString(2);
+            document.getElementById('base8Result').innerText = num.toString(8);
+            document.getElementById('base16Result').innerText = num.toString(16).toUpperCase();
+        }
+
+
+        /* ======================================================
+           10. AUDIO SOUND GENERATOR (Web Audio API Synth)
+        ====================================================== */
+        let audioCtx;
+        let isRainPlaying = false;
+
+        function toggleAmbientSound(type) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            const btn = document.getElementById(`sound-btn-${type}`);
+            if (isRainPlaying) {
+                audioCtx.suspend();
+                isRainPlaying = false;
+                btn.classList.remove('border-violet-500', 'bg-violet-950/30');
+            } else {
+                audioCtx.resume();
+                isRainPlaying = true;
+                btn.classList.add('border-violet-500', 'bg-violet-950/30');
+            }
+        }
+
+
+        /* ======================================================
+           APP INITIALIZATION ON PAGE LOAD
+        ====================================================== */
+        window.onload = function() {
+            renderGrades();
+            renderTasks();
+            initSchedule();
+            updateFlashcardView();
+            runUnitConversion();
+            convertNumberBases();
+
+            // Default to Flappy Bird app screen
+            switchApp('flappy');
+        };
+    </script>
+</body>
+</html>
